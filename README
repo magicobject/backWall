@@ -1,0 +1,21 @@
+The BACKWALL algorithm was something I dreamed up in 1997/8
+
+The idea is to generate a sequence of cryptographic keys that should be used one time only.
+
+They are used in a reducing sequence, using them in that sequence makes it extremely difficult to predict earlier key values.
+
+k10, k9, k8, k7 etc.
+
+One master key is used to generate all subsequent keys.
+
+For very large key numbers there is a neat trick to generate them really quickly:
+
+instear on O(MD5(N))  where N is a large positive integer divide N up into 8 byte sections.
+
+Let M0 be the master key, then key N is
+
+M1 = BW(MD5(8B(M0,N)))
+M2 = BW(MD5(8B(M1,N)))
+M3 = BW(MD5(8B(M2,N)))
+etc.
+
