@@ -1,0 +1,25 @@
+{
+  "name": "backWall",
+  "type": "library",
+  "description": "A simple library for generating key sequences.",
+  "authors": [
+    {
+      "name": "GW Software Limited",
+      "email": "greg@gregwright.it"
+    }
+  ],
+  "require": {
+    "php": ">=5.4.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.6.*",
+    "mockery/mockery": "0.9.*"
+  },
+
+  "autoload": {
+        "psr-4": {
+            "backWall\\" : "src/",
+            "backWallTest\\" : "test/"
+        }
+  }
+}
