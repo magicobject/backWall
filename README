@@ -19,3 +19,13 @@ M2 = BW(MD5(8B(M1,N)))
 M3 = BW(MD5(8B(M2,N)))
 etc.
 
+
+You can use a key sequence as an encryption mechanism. Series of keys can be 
+used as a (perhpas one time) pad. This can then be ORed with the text to be 
+encrypted. To decrypt just renenerate the pad and OR with the encrypted message.
+
+
+HISTORY
+
+circa 2010 PHP version
+Auguat 2015 - converted to PHP 5.6, PSR-4, modern naming conventions, comments.
