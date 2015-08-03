@@ -1,11 +1,13 @@
 <?php
-define('AUTOLOAD_PATH','..');
-require_once '../autoload.php';
 
-class bwkey_performance_test extends Test {
+namespace backWallTest;
+
+use backWall\bwKeyGenerator;
+
+class bwKeyPerformanceTest extends \PHPUnit_Framework_TestCase {
 
 	public function _test2() {
-		$b=new bwkey();
+		$b=new bwKeyGenerator();
 		for ($i=128; $i< 130; $i++) {
 			$b->nth($i);
 			echo $b->getTxt()."\n";
@@ -13,12 +15,10 @@ class bwkey_performance_test extends Test {
 	}
 
 	public function test250000() {
-		$b=new bwkey();
+		$b=new bwKeyGenerator();
 		for ($i=0; $i< 250000; $i++) {
 			$b->nth($i);
 			echo $b->getTxt()."\n";
 		}
 	}
 }
-
-$t=new bwkey_performance_test();

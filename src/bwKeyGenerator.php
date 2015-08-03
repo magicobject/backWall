@@ -1,6 +1,8 @@
 <?php
 
-class bwkey {
+namespace backWall;
+
+class bwKeyGenerator {
 
 	private $_primary_master;
 	private $_master;
