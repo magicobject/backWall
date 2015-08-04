@@ -2,6 +2,10 @@
 
 namespace backWall;
 
+/**
+ * Class bwFileEncryptor
+ * @package backWall
+ */
 class bwFileEncryptor
 {
 
@@ -23,61 +27,78 @@ class bwFileEncryptor
     /** @var string */
     private $masterKey;
 
-    public function __construct($filename, $master_key = '')
+    /**
+     * @param $filename
+     * @param string $masterKey
+     */
+    public function __construct($filename, $masterKey = '')
     {
         $this->filename = $filename;
         $this->tmpFilename = $filename . ".tmp";
-        $this->masterKey = $master_key;
+        $this->masterKey = $masterKey;
         // setup signal handlers
         pcntl_signal(SIGTERM, array(&$this, "signalHandler"), false);
         pcntl_signal(SIGINT, array(&$this, "signalHandler"), false);
     }
 
 
+    /**
+     * @param integer $signo
+     */
     public function signalHandler($signo)
     {
-        echo "Sig_handler called\n";
         switch ($signo) {
             case SIGTERM:
             case SIGINT:
                 // handle shutdown tasks
-                echo "Sig_handler called\n";
                 unlink($this->tmpFilename);
                 exit;
                 break;
             default:
-                echo "Sig_handler called - no handler for $signo \n";
+                echo "signalHandler called - no handler for $signo \n";
                 break;
         }
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function encrypt()
     {
-        $this->_read();
-        $this->_openWrite();
-        $this->_encrypt();
-        $this->_write();
-        $this->_move();
+        $this->getFileContents();
+        $this->openOutputFileForWriting();
+        $this->encryptContents();
+        $this->writeContentsToFile();
+        $this->overwriteOriginalFile();
     }
 
+    /**
+     * @throws Exception
+     */
     public function decrypt()
     {
-        $this->_read();
-        $this->_openWrite();
-        $this->_decrypt();
-        $this->_write();
-        $this->_move();
+        $this->getFileContents();
+        $this->openOutputFileForWriting();
+        $this->decryptContents();
+        $this->writeContentsToFile();
+        $this->overwriteOriginalFile();
     }
 
-    private function _write()
+    /**
+     * @throws \RuntimeException
+     */
+    private function writeContentsToFile()
     {
         $len = fwrite($this->fh, $this->contents);
-        if ($len != strlen($this->contents)) throw new Exception("Problem writing to " . $this->tmpFilename);
+        if ($len != strlen($this->contents)) throw new \RuntimeException("Problem writing to " . $this->tmpFilename);
         fclose($this->fh);
     }
 
-    private function _decrypt()
+    /**
+     *
+     */
+    private function decryptContents()
     {
         $parts = preg_split('/,/', $this->contents, 2);
         $this->keyNumber = $parts[0];
@@ -85,27 +106,39 @@ class bwFileEncryptor
         $this->contents = $enc->decrypt($this->masterKey);
     }
 
-    private function _encrypt()
+    /**
+     *
+     */
+    private function encryptContents()
     {
         $this->keyNumber = time() % 131072;
         $enc = new bwMessageEncryptor($this->contents, $this->keyNumber);
         $this->contents = $this->keyNumber . ',' . $enc->encrypt($this->masterKey);
     }
 
-    private function _read()
+    /**
+     * @throws \RuntimeException
+     */
+    private function getFileContents()
     {
         $this->contents = file_get_contents($this->filename);
-        if ($this->contents === false) throw new exception("Problem reading " . $this->filename);
+        if ($this->contents === false) throw new \RuntimeException("Problem reading " . $this->filename);
     }
 
-    private function _openWrite()
+    /**
+     * @throws \RuntimeException
+     */
+    private function openOutputFileForWriting()
     {
         $this->fh = fopen($this->tmpFilename, "w");
-        if ($this->fh === false) throw new exception("Problem opening " . $this->tmpFilename . "for write");
+        if ($this->fh === false) throw new \RuntimeException("Problem opening " . $this->tmpFilename . "for write");
     }
 
-    private function _move()
+    /**
+     *
+     */
+    private function overwriteOriginalFile()
     {
-        system("mv " . $this->tmpFilename . " " . $this->filename);
+        rename($this->tmpFilename, $this->filename);
     }
 }

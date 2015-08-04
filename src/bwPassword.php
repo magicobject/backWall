@@ -2,6 +2,10 @@
 
 namespace backWall;
 
+/**
+ * Class bwPassword
+ * @package backWall
+ */
 class bwPassword {
 
 	/**

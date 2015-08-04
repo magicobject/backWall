@@ -4,6 +4,10 @@ namespace backWallTest;
 
 use backWall\bwMessageEncryptor;
 
+/**
+ * Class bwEncryptionTest
+ * @package backWallTest
+ */
 class bwEncryptionTest extends \PHPUnit_Framework_TestCase {
 
 	public function testBwEncClass() {

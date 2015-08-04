@@ -18,8 +18,8 @@ class bwPadTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(208,strlen($pad)); // 208 = Largest multiple of 16 over or = to 199
 
 		$bwkey=new bwKeyGenerator();
-		$bwkey->nth(17);
-		$start=$bwkey->getTxt();
+		$bwkey->generateNthKey(17);
+		$start=$bwkey->getText();
 
 		$strpad=bin2hex($pad);
 

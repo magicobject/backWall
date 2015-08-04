@@ -2,6 +2,10 @@
 
 namespace backWall;
 
+/**
+ * Class bwMessageEncryptor
+ * @package backWall
+ */
 class bwMessageEncryptor {
 
 	/** @var  String */

@@ -4,6 +4,10 @@ namespace backWallTest;
 
 use backWall\bwFileEncryptor;
 
+/**
+ * Class bwEncryptFileTest
+ * @package backWallTest
+ */
 class bwEncryptFileTest extends \PHPUnit_Framework_TestCase {
 
 	public function testBwEncFileClass() {

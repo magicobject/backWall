@@ -13,7 +13,7 @@
     
     <testsuites>
         <testsuite name="BackWall Test Suite">
-            <directory>test</directory>
+            <directory>test/unit</directory>
         </testsuite>
     </testsuites>
     
@@ -23,10 +23,10 @@
         </whitelist>
     </filter>
     
-    <!-- logging>
+    <logging>
         <log type="coverage-html" target="build/coverage" charset="UTF-8" yui="true" highlight="true"/>
         <log type="coverage-text" target="build/coverage.txt"/>
-    </logging -->
+    </logging>
     
     <listeners>
         <listener class="Mockery\Adapter\Phpunit\TestListener"/>

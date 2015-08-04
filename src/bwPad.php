@@ -2,6 +2,10 @@
 
 namespace backWall;
 
+/**
+ * Class bwPad
+ * @package backWall
+ */
 class bwPad {
 	/** @var bwKeyGenerator */
 	private $bwKeyGenerator;
@@ -25,8 +29,8 @@ class bwPad {
 
 		// Loop forward getting bw pad stripes as this is the most efficient way.
 		while(strlen($padSize < $size)) {
-			$this->bwKeyGenerator->nth($keyNumber);
-			$pad.=$this->bwKeyGenerator->getBin();
+			$this->bwKeyGenerator->generateNthKey($keyNumber);
+			$pad.=$this->bwKeyGenerator->getBinary();
 			$keyNumber++;
 			$padSize+=16; // Md5 raw length = 16 bytes
 		}

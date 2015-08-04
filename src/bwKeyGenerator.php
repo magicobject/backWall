@@ -2,65 +2,98 @@
 
 namespace backWall;
 
+/**
+ * Class bwKeyGenerator
+ * @package backWall
+ */
 class bwKeyGenerator {
 
-	private $_primary_master;
-	private $_master;
-	private $_value;
-	private $_cache;
+	/** @var  String the primary master key */
+	private $primaryMasterKey;
 
-	public function __construct($master='') {
-		if (empty($master)) {
-			$this->_primary_master=$this->_md5("mA8fvL590dfbJ320'f#");
+	/** @var  String a master key */
+	private $masterKey;
+
+	private $computedValue;
+
+	/** @var array Cache hash values to avoid multiple hashing of the same values */
+	private $cache = [];
+
+	/**
+	 * @param string $masterKey
+	 */
+	public function __construct($masterKey='') {
+		if (empty($masterKey)) {
+			$this->primaryMasterKey=$this->hash("mA8fvL590dfbJ320'f#");
 		} else {
-			$this->_primary_master=$this->_md5($master);
+			$this->primaryMasterKey=$this->hash($masterKey);
 		}
 	}
 
-	private function _reset() {
-		$this->_master=$this->_primary_master;
-		$this->_value=$this->_md5($this->_master);
-		$this->_cache=array();
+	private function reset() {
+		$this->masterKey=$this->primaryMasterKey;
+		$this->computedValue=$this->hash($this->masterKey);
+		$this->cache=[];
 	}
 
-	// For super fast generation only deal with the lowest 8 bytes (recursively)
-	// So for an 8 byte number there would be a max of 256*8 md5 ops not 256^8.
-	public function nth($n, $reset=true) {
-		if ($reset) $this->_reset();
+
+	/**
+	 * For super fast generation only deal with the lowest 8 bytes (recursively)
+	 * So for an 8 byte number there would be a max of 256*8 md5 ops not 256^8.
+	 *
+	 * @param int $n - the required key number
+	 * @param bool|true $reset
+	 * @return null - Use getBin() or getTxt() to get the actual computed key.
+	 */
+	public function generateNthKey($n, $reset=true) {
+		if ($reset) $this->reset();
 		$again=false;
 
-		$big_end=0;
-		$small_end=$n;
+		$bigEnd=0;
+		$smallEnd=$n;
 
-		if ($n > 3) {
-			$big_end=floor($n/4);
-			$small_end=$n % 4;
+		if ($n >= 4) {
+			$bigEnd=floor($n/4);
+			$smallEnd=$n % 4;
 			$again=true;
 		}
 
-		for ($i=0; $i <= $small_end; $i++) {
-			$this->_value=$this->_md5($this->_value ^ $this->_master,true);
+		for ($i=0; $i <= $smallEnd; $i++) {
+			$this->computedValue=$this->hash($this->computedValue ^ $this->masterKey);
 		}
 
 		if ($again) {
-			$this->_master=$this->_md5($this->_value ^ $this->_master, true); // Not without the MD5 - think about it
+			$this->masterKey=$this->hash($this->computedValue ^ $this->masterKey); // Not without the hash - think about it
 			// echo "$n : change master key to ".bin2hex($this->_master)."\n";
-			$this->nth($big_end, false);
+			$this->generateNthKey($bigEnd, false);
 		}
 	}
 
-	public function getTxt() {
-		return bin2hex( $this->_value );
+	/**
+	 * @return string
+	 */
+	public function getText() {
+		return bin2hex( $this->computedValue );
 	}
 
-	public function getBin() {
-		return $this->_value;
+	/**
+	 * @return mixed
+	 */
+	public function getBinary() {
+		return $this->computedValue;
 	}
 
-	// md5 binary cache
-	private function _md5($str) {
-		if (!isset($this->_cache[$str])) $this->_cache[$str]=md5($str,true);
-		return $this->_cache[$str];
+	/**
+	 * @param $str
+	 * @return String
+	 */
+	private function hash($str) {
+		if (!isset($this->cache[$str])) {
+			$hashValue = md5($str,true);
+			$this->cache[$str]= $hashValue;
+			return $hashValue;
+		}
+		return $this->cache[$str];
 	}
 
 }
