@@ -2,6 +2,7 @@
 
 namespace backWall;
 
+use backWall\HashAlgorithms\HashAlgorithmInterface;
 /**
  * Class bwFileEncryptor
  * @package backWall
@@ -27,15 +28,20 @@ class bwFileEncryptor
     /** @var string */
     private $masterKey;
 
+    /** @var  HashAlgorithmInterface */
+    private $hashAlgorithm;
+
     /**
      * @param $filename
      * @param string $masterKey
      */
-    public function __construct($filename, $masterKey = '')
+    public function __construct($filename, $masterKey = '', HashAlgorithmInterface $hashAlgorithm)
     {
         $this->filename = $filename;
         $this->tmpFilename = $filename . ".tmp";
         $this->masterKey = $masterKey;
+        $this->hashAlgorithm = $hashAlgorithm;
+
         // setup signal handlers
         pcntl_signal(SIGTERM, array(&$this, "signalHandler"), false);
         pcntl_signal(SIGINT, array(&$this, "signalHandler"), false);
@@ -62,7 +68,7 @@ class bwFileEncryptor
 
 
     /**
-     * @throws Exception
+     * @throws \RuntimeException
      */
     public function encrypt()
     {
@@ -74,7 +80,7 @@ class bwFileEncryptor
     }
 
     /**
-     * @throws Exception
+     * @throws \RuntimeException
      */
     public function decrypt()
     {
@@ -102,7 +108,7 @@ class bwFileEncryptor
     {
         $parts = preg_split('/,/', $this->contents, 2);
         $this->keyNumber = $parts[0];
-        $enc = new bwMessageEncryptor($parts[1], $this->keyNumber);
+        $enc = new bwMessageEncryptor($parts[1], $this->keyNumber, $this->hashAlgorithm);
         $this->contents = $enc->decrypt($this->masterKey);
     }
 
@@ -112,7 +118,7 @@ class bwFileEncryptor
     private function encryptContents()
     {
         $this->keyNumber = time() % 131072;
-        $enc = new bwMessageEncryptor($this->contents, $this->keyNumber);
+        $enc = new bwMessageEncryptor($this->contents, $this->keyNumber, $this->hashAlgorithm);
         $this->contents = $this->keyNumber . ',' . $enc->encrypt($this->masterKey);
     }
 

@@ -2,6 +2,7 @@
 
 namespace backWall;
 
+use backWall\HashAlgorithms\HashAlgorithmInterface;
 /**
  * Class bwMessageEncryptor
  * @package backWall
@@ -17,13 +18,17 @@ class bwMessageEncryptor {
 	/** @var  string */
 	private $encrypted;
 
+	/** @var  HashAlgorithmInterface */
+	private $hashAlgorithm;
+
 	/**
 	 * @param $msg
 	 * @param $key_number
 	 */
-	public function __construct($msg, $key_number) {
+	public function __construct($msg, $key_number, HashAlgorithmInterface $hashAlgorithm) {
 		$this->message=$msg;
 		$this->keyNumber=$key_number;
+		$this->hashAlgorithm = $hashAlgorithm;
 	}
 
 	/**
@@ -31,7 +36,7 @@ class bwMessageEncryptor {
 	 * @return string
 	 */
 	public function encrypt($master_key='') {
-		$bwpad=new bwPad($master_key);
+		$bwpad=new bwPad($master_key, $this->hashAlgorithm);
 		$pad=$bwpad->getPad(strlen($this->message), $this->keyNumber);
 		$this->encrypted = $pad ^  $this->message;
 		return $this->encrypted;

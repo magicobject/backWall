@@ -2,6 +2,8 @@
 
 namespace backWall;
 
+use backWall\HashAlgorithms\HashAlgorithmInterface;
+
 /**
  * Class bwKeyGenerator
  * @package backWall
@@ -19,10 +21,15 @@ class bwKeyGenerator {
 	/** @var array Cache hash values to avoid multiple hashing of the same values */
 	private $cache = [];
 
+    /** @var  HashAlgorithmInterface */
+    private $hashAlgorithm;
+
 	/**
 	 * @param string $masterKey
 	 */
-	public function __construct($masterKey='') {
+	public function __construct($masterKey='', HashAlgorithmInterface $hashAlgorithm) {
+        $this->hashAlgorithm = $hashAlgorithm;
+
 		if (empty($masterKey)) {
 			$this->primaryMasterKey=$this->hash("mA8fvL590dfbJ320'f#");
 		} else {
@@ -32,8 +39,8 @@ class bwKeyGenerator {
 
 	private function reset() {
 		$this->masterKey=$this->primaryMasterKey;
+        $this->cache=[];
 		$this->computedValue=$this->hash($this->masterKey);
-		$this->cache=[];
 	}
 
 
@@ -89,7 +96,7 @@ class bwKeyGenerator {
 	 */
 	private function hash($str) {
 		if (!isset($this->cache[$str])) {
-			$hashValue = md5($str,true);
+			$hashValue = $this->hashAlgorithm->hash($str);
 			$this->cache[$str]= $hashValue;
 			return $hashValue;
 		}

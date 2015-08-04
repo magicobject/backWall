@@ -2,6 +2,8 @@
 
 namespace backWall;
 
+use backWall\HashAlgorithms\HashAlgorithmInterface;
+
 /**
  * Class bwPad
  * @package backWall
@@ -10,11 +12,15 @@ class bwPad {
 	/** @var bwKeyGenerator */
 	private $bwKeyGenerator;
 
+    /** @var  HashAlgorithmInterface */
+    private $hashAlgorithm;
+
 	/**
 	 * @param string $master_key
 	 */
-	public function __construct($master_key='') {
-		$this->bwKeyGenerator=new bwKeyGenerator($master_key);
+	public function __construct($master_key='', HashAlgorithmInterface $hashAlgorithm) {
+        $this->hashAlgorithm = $hashAlgorithm;
+		$this->bwKeyGenerator=new bwKeyGenerator($master_key, $hashAlgorithm);
 	}
 
 	/**
@@ -32,7 +38,7 @@ class bwPad {
 			$this->bwKeyGenerator->generateNthKey($keyNumber);
 			$pad.=$this->bwKeyGenerator->getBinary();
 			$keyNumber++;
-			$padSize+=16; // Md5 raw length = 16 bytes
+			$padSize+=$this->hashAlgorithm->getHashLength()/2; // Md5 raw length = 16 bytes
 		}
 		return $pad;
 	}

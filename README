@@ -10,13 +10,13 @@ One master key is used to generate all subsequent keys.
 
 For very large key numbers there is a neat trick to generate them really quickly:
 
-instear on O(MD5(N))  where N is a large positive integer divide N up into 8 byte sections.
+instead of O(Hash(N))  where N is a large positive integer divide N up into 8 byte sections.
 
 Let M0 be the master key, then key N is
 
-M1 = BW(MD5(8B(M0,N)))
-M2 = BW(MD5(8B(M1,N)))
-M3 = BW(MD5(8B(M2,N)))
+M1 = BW(Hash(8B(M0,N)))
+M2 = BW(Hash(8B(M1,N)))
+M3 = BW(Hash(8B(M2,N)))
 etc.
 
 
@@ -28,4 +28,6 @@ encrypted. To decrypt just renenerate the pad and OR with the encrypted message.
 HISTORY
 
 circa 2010 PHP version
-Auguat 2015 - converted to PHP 5.6, PSR-4, modern naming conventions, comments.
+August 2015 - converted to PHP 5.6, PSR-4, modern naming conventions, comments.
+August 2015 - Add a hash strategy so any hash algorithm can be used, provided hte hash length is a constant.
+ 
